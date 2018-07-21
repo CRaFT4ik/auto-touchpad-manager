@@ -1,0 +1,7 @@
+# ############################################################################ #
+# ####################### # Coded by Eldar @ CRaFT4ik # ###################### #
+# ###################### # craft4ik@gmail.com :: 2018 # ###################### #
+# ############################################################################ #
+
+KERNEL=="mouse[0-9]*", SUBSYSTEM=="input", ACTION=="add", ENV{DISPLAY}=":0.0", ENV{XAUTHORITY}="/home/$USER/.Xauthority", RUN+="/bin/bash $PATH/script.sh add"
+KERNEL=="mouse[0-9]*", SUBSYSTEM=="input", ACTION=="remove", ENV{DISPLAY}=":0.0", ENV{XAUTHORITY}="/home/$USER/.Xauthority", RUN+="/bin/bash $PATH/script.sh remove"
