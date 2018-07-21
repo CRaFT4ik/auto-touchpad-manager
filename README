@@ -1,0 +1,13 @@
+# Coded by Eldar Timraleev, CRaFT4ik
+# Contacts: craft4ik@gmail.com
+# First release in 2018
+
+Project tested on Ubuntu 16.04 x64.
+
+Installation:
+ # sudo bash autosetup.sh -i
+
+For removing:
+ # sudo bash autosetup.sh -rm
+
+Note: your must use remove command before your change your installation directory!
