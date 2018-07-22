@@ -17,6 +17,8 @@ STARTUP_CONTENT=$'start on startup\npre-start exec sleep 5\ntask\nexec /bin/bash
 if [[ -n "$1" && $1 = "-rm" ]]; then
 	sudo rm -f $RULES_PATH
 	sudo rm -f $STARTUP_PATH
+	sudo bash script.sh -rm
+	echo
 	echo "Ok."
 	exit
 elif [[ -n "$1" && $1 = "-i" ]]; then
@@ -28,7 +30,11 @@ elif [[ -n "$1" && $1 = "-i" ]]; then
 	sudo touch $STARTUP_PATH
 	sudo echo "$STARTUP_CONTENT" | sudo tee $STARTUP_PATH
 	echo
-	echo "Was installed."
+	echo "Was installed. Launching..."
+	echo
+	sudo bash script.sh
+	echo
+	echo "Was launched."
 else
 	echo $0 "--help"
 	echo " Use -i for install the program."
