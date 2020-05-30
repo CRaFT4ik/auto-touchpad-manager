@@ -12,6 +12,13 @@
 USERNAME=${SUDO_USER:-$USER}
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
+# Check if the 'evtest' installed or not.
+
+if ! [ -x "$(command -v evtest)" ]; then
+	echo 'Please, install "evtest" first' >&2
+	exit 1
+fi
+
 # Find all touchpads exept synaptic's touchpads.
 touchpads=$(xinput list | grep -i "touchpad" | grep -i -v "synaptic")
 touchpads_ids=$(echo "$touchpads" | awk -F "=" '{print $2}' | awk -F "\t" '{print $1}')
@@ -39,7 +46,17 @@ fi
 
 echo
 
-mouses=$(xinput list | grep -i "mouse")
+# Detecting mouses.
+# old code: mouses=$(xinput list | grep -i "mouse")
+for sysdevpath in $(find /sys/bus/usb/devices/usb*/ -name dev); do
+        syspath="${sysdevpath%/dev}"
+        devname="$(udevadm info -q name -p $syspath)"
+        [[ "$devname" == "bus/"* ]] && continue
+        eval "$(udevadm info -q property --export -p $syspath)"
+        ( [[ -z "$ID_SERIAL" ]] || [[ "$ID_INPUT" != 1 ]] || [[ "$ID_INPUT_KEY" != 1 ]] || [[ "$ID_INPUT_MOUSE" != 1 ]] ) && continue
+        mouses=$mouses"$ID_SERIAL - /dev/$devname\n"
+		unset ID_SERIAL ID_INPUT ID_INPUT_KEY ID_INPUT_MOUSE
+done
 
 if [ -z "$mouses" ]; then
     echo "Mouses are not detected!"
@@ -52,7 +69,7 @@ if [ -z "$mouses" ]; then
 	notify "enable"
 else
 	echo "Mouses detected:"
-	echo "$mouses"
+	echo -e -n "$mouses" | awk -F" - " 'NR>1{arr[$1]++}END{for (a in arr) print " -> " a}'
 
 	if [[ "$1" != "-rm" ]]; then
 		for id in $touchpads_ids
